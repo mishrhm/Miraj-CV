@@ -1,5 +1,5 @@
 "use client";
-
+import ExperienceSection from "@/components/ExperienceSection";
 import { useEffect, useState } from "react";
 
 type ProfileForm = {
@@ -148,6 +148,7 @@ export default function ProfilePage() {
                     )}
                 </div>
             </div>
+            <ExperienceSection />
         </div>
     );
 }
