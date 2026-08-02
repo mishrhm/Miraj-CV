@@ -1,6 +1,7 @@
 "use client";
-import ExperienceSection from "@/components/ExperienceSection";
 import { useEffect, useState } from "react";
+import ExperienceSection from "@/components/ExperienceSection";
+import EducationSection from "@/components/EducationSection";
 
 type ProfileForm = {
     fullName: string;
@@ -149,6 +150,7 @@ export default function ProfilePage() {
                 </div>
             </div>
             <ExperienceSection />
+            <EducationSection />
         </div>
     );
 }
