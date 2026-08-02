@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: miraj-cv
+      POSTGRES_PASSWORD: miraj-cv
+      POSTGRES_DB: miraj-cv
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U miraj-cv"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  docx-service:
+    build: ./docx-service
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./docx-service:/app
+
+  web:
+    build: ./web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://miraj-cv:miraj-cv@db:5432/miraj-cv
+      DOCX_SERVICE_URL: http://docx-service:8001
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+      docx-service:
+        condition: service_started
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+
+volumes:
+  db_data:

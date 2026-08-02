@@ -1,0 +1,100 @@
+// Phase 0/1 schema: User + structured Profile.
+// JobApplication, GapAnalysis, GeneratedDocument are added in Phase 2+.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile Profile?
+}
+
+// One canonical structured profile per user. This is the source of truth
+// that every downstream tailoring step reads from — never overwritten
+// by AI output, only edited by the user.
+model Profile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+
+  fullName  String
+  headline  String? // e.g. "Founding CTO / Full-Stack Engineer"
+  email     String
+  phone     String?
+  location  String?
+  linkedin  String?
+  github    String?
+  summary   String? @db.Text // 2-4 sentence professional summary
+
+  experiences Experience[]
+  education   Education[]
+  skills      Skill[]
+  projects    Project[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Experience {
+  id         String   @id @default(cuid())
+  profileId  String
+  profile    Profile  @relation(fields: [profileId], references: [id])
+
+  organization String
+  title        String
+  location     String?
+  startDate    DateTime
+  endDate      DateTime? // null = current
+  bullets      String[]  // each bullet is a separate, independently-tailorable unit
+  order        Int       @default(0) // display order, user-controlled
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Education {
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id])
+
+  institution String
+  degree      String
+  field       String?
+  startDate   DateTime?
+  endDate     DateTime?
+  notes       String?
+  order       Int       @default(0)
+}
+
+model Skill {
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id])
+
+  name     String
+  category String? // e.g. "Languages", "Frameworks", "Tools"
+  order    Int     @default(0)
+}
+
+model Project {
+  id        String  @id @default(cuid())
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id])
+
+  name        String
+  description String
+  bullets      String[]
+  link        String?
+  order       Int      @default(0)
+}

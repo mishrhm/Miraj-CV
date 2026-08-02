@@ -1,0 +1,43 @@
+# --- Environment / secrets ---
+.env
+.env.local
+.env.*.local
+web/.env
+docx-service/.env
+
+# --- Node / Next.js (web/) ---
+web/node_modules/
+web/.next/
+web/out/
+web/build/
+web/next-env.d.ts
+web/npm-debug.log*
+web/yarn-debug.log*
+web/yarn-error.log*
+web/.pnpm-debug.log*
+
+# --- Prisma ---
+web/prisma/*.db
+web/prisma/dev.db*
+
+# --- Python (docx-service/) ---
+docx-service/__pycache__/
+docx-service/**/__pycache__/
+docx-service/*.pyc
+docx-service/.venv/
+docx-service/venv/
+docx-service/*.egg-info/
+
+# --- Docker ---
+*.pid
+
+# --- OS / editor cruft ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# --- Misc build artifacts ---
+*.docx
+!sample_resume.docx
